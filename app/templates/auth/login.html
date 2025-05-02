@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block title %}Login - Flask Blog{% endblock %}
+
+{% block content %}
+    <div class="modal modal-sheet position-static d-block bg-body-secondary p-2 py-md-0" tabindex="-1" role="dialog" id="modalSignin">
+        <div class="modal-dialog">
+          <div class="modal-content rounded-4 shadow">
+            <div class="container p-3 border-bottom-0">
+                <h1 class="fw-bold mb-0 fs-2 text-center" style="color: #33c2ff;">Login</h1>
+              </div>
+      
+            <div class="modal-body p-5 pt-0">
+              <form method="POST" action="{{ url_for('auth.login') }}">
+                <div class="form-floating mb-3">
+                  <input type="email" class="form-control rounded-3" id="floatingInput" placeholder="name@example.com" name="email" required>
+                  <label for="floatingInput">Email address</label>
+                </div>
+                <div class="form-floating mb-3">
+                  <input type="password" class="form-control rounded-3" id="floatingPassword" placeholder="Password" name="password" required>
+                  <label for="floatingPassword">Password</label>
+                </div>
+                <div class="mb-3 form-check">
+                    <input type="checkbox" class="form-check-input" id="remember" name="remember">
+                    <label class="form-check-label" for="remember">Remember Me</label>
+                </div>
+                <button class="w-100 mb-2 btn btn-lg rounded-3 btn-info fw-bold" style="color: white;" type="submit">Login</button>
+                <hr class="my-1">
+                <div class="text-center">
+                    <small>Don't have an account? <a href="{{ url_for('auth.signup') }}">Sign Up</a></small>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      
+      
+</div>
+{% endblock %}

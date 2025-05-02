@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block title %}Create Post - Flask Blog{% endblock %}
+
+{% block content %}
+<div class="card m-4 p-2">
+    <div class="card-header text-center rounded-3 m-3 mb-1" style="background-color:#31d2f2;color: white;">
+        <h2>Create New Post</h2>
+    </div>
+    <div class="card-body" >
+        <form method="POST" action="{{ url_for('blog.create_post') }}">
+            <div class="mb-3">
+                <label for="title" class="form-label">Title</label>
+                <input type="text" class="form-control" id="title" name="title" required>
+            </div>
+            <div class="mb-3">
+                <label for="content" class="form-label">Content</label>
+                <textarea class="form-control" id="content" name="content" rows="8" required></textarea>
+            </div>
+            <div class="container align-items-center">
+                <button type="submit" class="btn btn-info">Post</button>
+                <a href="{{ url_for('blog.feed') }}" class="btn btn-outline-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

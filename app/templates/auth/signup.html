@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block title %}Sign Up - Flask Blog{% endblock %}
+
+{% block content %}
+    <div class="modal modal-sheet position-static d-block bg-body-secondary p-2 py-md-0" tabindex="-1" role="dialog" id="modalSignin">
+        <div class="modal-dialog">
+          <div class="modal-content rounded-4 shadow">
+            <div class="container p-3 pb-3 border-bottom-0">
+              <h1 class="fw-bold mb-0 fs-2 text-center" style="color: #33c2ff;">Sign Up</h1>
+            </div>
+      
+            <div class="modal-body p-5 pt-0">
+              <form method="POST" action="{{ url_for('auth.login') }}">
+
+                <div class="form-floating mb-3">
+                    <input type="text" class="form-control" id="username" placeholder="username" name="username" required>
+                    <label for="username">Username</label>                  
+                </div>
+                <div class="form-floating mb-3">
+                  <input type="email" class="form-control rounded-3" id="floatingInput" placeholder="name@example.com" name="email" required>
+                  <label for="floatingInput">Email address</label>
+                </div>
+                <div class="form-floating mb-3">
+                  <input type="password" class="form-control rounded-3" id="floatingPassword" placeholder="Password" name="password" required>
+                  <label for="floatingPassword">Password</label>
+                </div>
+                <div class="form-floating mb-3">
+                    <input type="password" class="form-control rounded-3" id="confirm_password" placeholder="Password" name="confirm_password" required>
+                    <label for="confirm_Password">Confirm Password</label>
+                </div>
+                <button class="w-100 mb-2 btn btn-lg rounded-3 btn-info fw-bold" style="color: white;" type="submit">Sign Up</button>
+                <hr class="my-1">
+                <div class="text-center">
+                    <small>Already have an account? <a href="{{ url_for('auth.login') }}">Login</a></small>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+</div>
+{% endblock %}

@@ -1,0 +1,152 @@
+{% extends "base.html" %}
+
+{% block title %}
+    {% if user %}
+        {{ user.username }}'s Profile
+    {% else %}
+        My Profile
+    {% endif %} - Flask Blog
+{% endblock %}
+
+{% block content %}
+<div class="card mb-4">
+    <div class="card-body">
+        <div class="d-flex align-items-center mb-3">
+            <style>
+                .profile-pic-container {
+    width: 100px;
+    height: 100px;
+    position: relative;
+    display: inline-block;
+    overflow: hidden;
+}
+
+                .profile-pic-container img {
+                    width: 100px;
+                    height: 100px;
+                    object-fit: cover;
+                    border-radius: 50%;
+                }
+                .profile-pic-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.6);
+    color: white;
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    padding: 0; /* prevent overflow */
+    box-sizing: border-box;
+}
+                .profile-pic-container:hover .profile-pic-overlay {
+                    opacity: 1;
+                }
+                .profile-pic-overlay button,
+                .profile-pic-overlay label {
+                    background: none;
+                    border: none;
+                    color: white;
+                    cursor: pointer;
+                    background: none;
+    border: none;
+    padding: 0;
+    margin: 0;
+                    font-size: 18px;
+                }
+                </style>
+                
+                <div class="profile-pic-container me-3">
+                    <img src="{{ url_for('static', filename='img/' + (user.image_file if user else current_user.image_file)) }}" alt="Profile Picture">
+                    {% if not user %}
+                    <div class="profile-pic-overlay">
+                        <!-- Upload icon -->
+                        <label for="image_file" title="Upload"><i class="bi bi-upload"></i></label>
+                        <!-- Remove icon -->
+                        <form method="POST" action="{{ url_for('profile.remove_picture') }}" style="display:inline;">
+                            <button type="submit" title="Remove"><i class="bi bi-trash"></i></button>
+                        </form>
+                    </div>
+                    {% endif %}
+                </div>
+                
+                {% if not user %}
+                <!-- Hidden form for image upload -->
+                <form method="POST" enctype="multipart/form-data" action="{{ url_for('profile.upload_picture') }}" style="display: none;" id="uploadForm">
+                    <input type="file" id="image_file" name="image_file" accept="image/*" onchange="document.getElementById('uploadForm').submit();">
+                </form>
+                {% endif %}                
+            <div>
+                <h2 class="mb-0">{{ user.username if user else current_user.username }}</h2>
+                <p class="text-muted mb-0">{{ user.email if user else current_user.email }}</p>
+                <small class="text-muted">Member since: {{ (user.created_at if user else current_user.created_at).strftime('%Y-%m-%d') }}</small>
+            </div>
+        </div>
+    </div>
+</div>
+
+<h3 class="mb-3">
+    {% if user %}
+        {{ user.username }}'s Posts
+    {% else %}
+        My Posts
+    {% endif %}
+</h3>
+
+{% if posts %}
+    {% for post in posts %}
+        <div class="card mb-4">
+            <div class="card-body">
+                <h4 class="card-title">
+                    <a href="{{ url_for('blog.post', post_id=post.id) }}">{{ post.title }}</a>
+                </h4>
+                <div class="card-subtitle text-muted mb-2">
+                    Posted on {{ post.created_at.strftime('%Y-%m-%d %H:%M') }}
+                </div>
+                <p class="card-text">{{ post.content|truncate(150) }}</p>
+                <a href="{{ url_for('blog.post', post_id=post.id) }}" class="btn btn-sm btn-primary">Read More</a>
+                
+                {% if not user or user.id == current_user.id %}
+                    <a href="{{ url_for('blog.edit_post', post_id=post.id) }}" class="btn btn-sm btn-outline-secondary">Edit</a>
+                    <button class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal{{ post.id }}">Delete</button>
+                    
+                    <!-- Delete Confirmation Modal -->
+                    <div class="modal fade" id="deleteModal{{ post.id }}" tabindex="-1" aria-labelledby="deleteModalLabel{{ post.id }}" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="deleteModalLabel{{ post.id }}">Delete Post</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    Are you sure you want to delete "{{ post.title }}"? This action cannot be undone.
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                    <form action="{{ url_for('blog.delete_post', post_id=post.id) }}" method="POST">
+                                        <button type="submit" class="btn btn-danger">Delete</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    {% endfor %}
+{% else %}
+    <div class="alert alert-info">No posts yet.</div>
+{% endif %}
+
+{% if not user %}
+    <div class="mt-4">
+        <a href="{{ url_for('blog.create_post') }}" class="btn btn-success">Create New Post</a>
+    </div>
+{% endif %}
+{% endblock %}
