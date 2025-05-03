@@ -14,12 +14,12 @@
         <div class="d-flex align-items-center mb-3">
             <style>
                 .profile-pic-container {
-    width: 100px;
-    height: 100px;
-    position: relative;
-    display: inline-block;
-    overflow: hidden;
-}
+                    width: 100px;
+                    height: 100px;
+                    position: relative;
+                    display: inline-block;
+                    overflow: hidden;
+                }
 
                 .profile-pic-container img {
                     width: 100px;
@@ -28,23 +28,23 @@
                     border-radius: 50%;
                 }
                 .profile-pic-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100px;
-    height: 100px;
-    border-radius: 50%;
-    background: rgba(0, 0, 0, 0.6);
-    color: white;
-    opacity: 0;
-    transition: opacity 0.3s ease-in-out;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 12px;
-    padding: 0; /* prevent overflow */
-    box-sizing: border-box;
-}
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    width: 100px;
+                    height: 100px;
+                    border-radius: 50%;
+                    background: rgba(0, 0, 0, 0.6);
+                    color: white;
+                    opacity: 0;
+                    transition: opacity 0.3s ease-in-out;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    gap: 12px;
+                    padding: 0; /* prevent overflow */
+                    box-sizing: border-box;
+                }
                 .profile-pic-container:hover .profile-pic-overlay {
                     opacity: 1;
                 }
@@ -55,9 +55,9 @@
                     color: white;
                     cursor: pointer;
                     background: none;
-    border: none;
-    padding: 0;
-    margin: 0;
+                    border: none;
+                    padding: 0;
+                    margin: 0;
                     font-size: 18px;
                 }
                 </style>
@@ -83,9 +83,33 @@
                 </form>
                 {% endif %}                
             <div>
-                <h2 class="mb-0">{{ user.username if user else current_user.username }}</h2>
+                <div class="d-flex align-items-center mb-2">
+                    <h2 class="mb-0 me-3">{{ user.username if user else current_user.username }}</h2>
+
+
+                    {% if user and user.id != current_user.id %}
+                        {% if Followingcheck %}
+                            <a href="{{ url_for('profile.unfollow', username=user.username) }}" class="btn btn-sm btn-danger fw-bold" style="color: white;">
+                                Unfollow <i class="bi bi-person-fill-x fs-5"></i>
+                            </a>
+                        {% else %}
+                            <a href="{{ url_for('profile.follow', username=user.username) }}" class="btn btn-sm btn-success fw-bold" style="color: white;">
+                                Follow <i class="bi bi-person-fill-add fs-5"></i>
+                            </a>
+                        {% endif %}
+                    {% endif %}
+
+                  </div>
                 <p class="text-muted mb-0">{{ user.email if user else current_user.email }}</p>
                 <small class="text-muted">Member since: {{ (user.created_at if user else current_user.created_at).strftime('%Y-%m-%d') }}</small>
+                <div class="mt-2">
+                    <a href="{{ url_for('profile.user_followers', username=(user.username if user else current_user.username)) }}" class="btn btn-outline-primary btn-sm me-2">
+                        Followers ({{ user.followers.count() if user else current_user.followers.count() }})
+                    </a>
+                    <a href="{{ url_for('profile.user_following', username=(user.username if user else current_user.username)) }}" class="btn btn-outline-primary btn-sm">
+                        Following ({{ user.followed.count() if user else current_user.followed.count() }})
+                    </a>
+                </div>
             </div>
         </div>
     </div>
@@ -105,16 +129,21 @@
             <div class="card-body">
                 <h4 class="card-title">
                     <a href="{{ url_for('blog.post', post_id=post.id) }}">{{ post.title }}</a>
+                    <a href="#" class="btn me-2 like-link" data-post-id="{{ post.id }}">
+                        <i class="bi {% if current_user.has_liked_post(post) %}bi-hand-thumbs-up-fill{% else %}bi-hand-thumbs-up{% endif %}"></i>
+                        <span id="like-count-{{ post.id }}">{{ post.liked_by.count() }}</span>
+                    </a>
                 </h4>
                 <div class="card-subtitle text-muted mb-2">
                     Posted on {{ post.created_at.strftime('%Y-%m-%d %H:%M') }}
                 </div>
                 <p class="card-text">{{ post.content|truncate(150) }}</p>
-                <a href="{{ url_for('blog.post', post_id=post.id) }}" class="btn btn-sm btn-primary">Read More</a>
+                
+                    <a href="{{ url_for('blog.post', post_id=post.id) }}" class="btn btn-info">Read More</a>
                 
                 {% if not user or user.id == current_user.id %}
-                    <a href="{{ url_for('blog.edit_post', post_id=post.id) }}" class="btn btn-sm btn-outline-secondary">Edit</a>
-                    <button class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal{{ post.id }}">Delete</button>
+                    <a href="{{ url_for('blog.edit_post', post_id=post.id) }}" class="btn btn-outline-secondary">Edit</a>
+                    <button class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal{{ post.id }}">Delete</button>
                     
                     <!-- Delete Confirmation Modal -->
                     <div class="modal fade" id="deleteModal{{ post.id }}" tabindex="-1" aria-labelledby="deleteModalLabel{{ post.id }}" aria-hidden="true">
@@ -149,4 +178,6 @@
         <a href="{{ url_for('blog.create_post') }}" class="btn btn-success">Create New Post</a>
     </div>
 {% endif %}
+
+    
 {% endblock %}

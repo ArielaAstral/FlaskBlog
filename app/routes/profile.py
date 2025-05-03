@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, url_for, flash, redirect, request
 from flask_login import current_user, login_required
 from app import db
-from app.models import Post, User
+from app.models import Post, User,followers
 
 profile_bp = Blueprint('profile', __name__)
 
@@ -12,10 +12,12 @@ def profile():
     return render_template('profile/profile.html', title='Profile', posts=posts)
 
 @profile_bp.route('/profile/<string:username>')
+@login_required
 def user_profile(username):
     user = User.query.filter_by(username=username).first_or_404()
     posts = Post.query.filter_by(user_id=user.id).order_by(Post.created_at.desc()).all()
-    return render_template('profile/profile.html', title=f'{username}\'s Profile', user=user, posts=posts)
+    Followingcheck = current_user.is_following(user)
+    return render_template('profile/profile.html', title=f'{username}\'s Profile', user=user, posts=posts,Followingcheck=Followingcheck)
 
 
 import os
@@ -66,3 +68,66 @@ def remove_picture():
         flash('Profile picture removed.', 'info')
     return redirect(url_for('profile.profile'))
 
+
+@profile_bp.route('/follow/<string:username>', methods=['POST', 'GET'])
+@login_required
+def follow(username):
+    user = User.query.filter_by(username=username).first_or_404()
+    if user == current_user:
+        flash('You cannot follow yourself.', 'warning')
+        return redirect(url_for('profile.user_profile', username=username))
+    if not current_user.is_following(user):
+        current_user.follow(user)
+        db.session.commit()
+        flash(f'You are now following {user.username}!', 'success')
+    else:
+        flash(f'You are already following {user.username}.', 'info')
+    return redirect(url_for('profile.user_profile', username=username))
+
+@profile_bp.route('/unfollow/<string:username>', methods=['POST', 'GET'])
+@login_required
+def unfollow(username):
+    user = User.query.filter_by(username=username).first_or_404()
+    if user == current_user:
+        flash('You cannot unfollow yourself.', 'warning')
+        return redirect(url_for('profile.user_profile', username=username))
+    if current_user.is_following(user):
+        current_user.unfollow(user)
+        db.session.commit()
+        flash(f'You have unfollowed {user.username}.', 'info')
+    else:
+        flash(f'You are not following {user.username}.', 'info')
+    return redirect(url_for('profile.user_profile', username=username))
+
+@profile_bp.route('/followers')
+@login_required
+def follower_list():
+    users = current_user.followers.all()
+    title = "Followers"
+    return render_template('profile/follow_list.html', users=users, title=title)
+
+@profile_bp.route('/<string:username>/followers')
+@login_required
+def user_followers(username):
+    user = User.query.filter_by(username=username).first_or_404()
+    users = user.followers.all()
+    title = f"{username}'s Followers"
+    return render_template('profile/follow_list.html', users=users, title=title)
+
+@profile_bp.route('/following')
+@login_required
+def following():
+    users = current_user.followed.all()
+    if not users:
+        flash('You are not following anyone', 'info')
+    title = "Following"
+    return render_template('profile/follow_list.html', users=users, title=title)
+
+@profile_bp.route('/<string:username>/following')
+@login_required
+def user_following(username):
+    user = User.query.filter_by(username=username).first_or_404()
+    users = user.followed.all()
+    title = f"{username}'s Following"
+    return render_template('profile/follow_list.html', users=users, title=title)
+# or wherever you want to redirect

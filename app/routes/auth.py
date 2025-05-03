@@ -9,7 +9,7 @@ auth_bp = Blueprint('auth', __name__)
 @auth_bp.route('/signup', methods=['GET', 'POST'])
 def signup():
     if current_user.is_authenticated:
-        return redirect(url_for('blog.feed'))
+        return redirect(url_for('blog.global_feed'))
     
     if request.method == 'POST':
         username = request.form.get('username')
@@ -46,7 +46,7 @@ def signup():
 @auth_bp.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
-        return redirect(url_for('blog.feed'))
+        return redirect(url_for('blog.global_feed'))
     
     if request.method == 'POST':
         email = request.form.get('email')
@@ -58,7 +58,7 @@ def login():
         if user and user.check_password(password):
             login_user(user, remember=remember)
             next_page = request.args.get('next')
-            return redirect(next_page) if next_page else redirect(url_for('blog.feed'))
+            return redirect(next_page) if next_page else redirect(url_for('blog.global_feed'))
         else:
             flash('Login unsuccessful. Please check email and password', 'danger')
     

@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="container marketing">
+  <h2 class="mb-4 text-center">{{ title }}</h2>
+
+  {% if users %}
+    {% for user in users %}
+      {% if loop.index0 % 3 == 0 %}
+        <div class="row mb-4">
+      {% endif %}
+
+          <div class="col-lg-4 text-center">
+              <img class="rounded-circle me-1" width="120px" height="120px" src="{{ url_for('static', filename='img/' + user.image_file) }}" alt="Profile Picture">
+              <h2 class="fw-normal">{{ user.username }}</h2>
+              <p><a class="btn btn-info" style="color: white;" href="{{ url_for('profile.user_profile', username=user.username) }}">View Profile &raquo;</a></p>
+          </div>
+
+      {% if loop.index0 % 3 == 2 or loop.last %}
+        </div>
+      {% endif %}
+    {% endfor %}
+  {% else %}
+    <div class="alert alert-info text-center">No users to display.</div>
+  {% endif %}
+</div>
+{% endblock %}
