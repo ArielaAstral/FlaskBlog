@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: flask-app
+    runtime: python
+    buildCommand: ""
+    startCommand: gunicorn app:app
+    envVars:
+      - key: DATABASE_URL
+        value: postgresql://flask_db_otk9_user:w6RG6QwlLwlMQyFbMk4d0A18LRyjCdNF@dpg-d11tbojuibrs73ej3jng-a/flask_db_otk9
+        
