@@ -1,39 +1,114 @@
+
 {% extends "base.html" %}
 
 {% block title %}Blog Feed - Flask Blog{% endblock %}
 
-{% block content %}
-<h1 class="mb-4" style="color: #33c2ff;">Latest Posts</h1>
+
+  {% block content %}
+  <div class="chatgpt-style">
 {% if posts.items %}
-    {% for post in posts.items %}
-        <div class="card  m-4 p-1 mb-4 border-info">
-            <div class="card-body">
-                <h2 class="card-title">
-                    <a href="{{ url_for('blog.post', post_id=post.id) }}" style="text-decoration: none;color: black;">{{ post.title }}</a>
-                    {% if current_user.is_authenticated %}
-                    <a href="#" class="btn me-2 like-link" data-post-id="{{ post.id }}">
-                        <i class="bi {% if current_user.has_liked_post(post) %}bi-hand-thumbs-up-fill{% else %}bi-hand-thumbs-up{% endif %}"></i>
-                        <span id="like-count-{{ post.id }}">{{ post.liked_by.count() }}</span>
-                    </a>
-                    {% endif %}
-                </h2>
-                <div class="card-subtitle text-muted mb-2">
-                    <span class="d-inline-flex align-items-center">
-                        Posted by
-                        <span class="ms-1 badge d-inline-flex align-items-center p-1 pe-2 text-success-emphasis bg-success-subtle border border-success-subtle rounded-pill">
-                            <img class="rounded-circle me-1" width="24" height="24" src="{{ url_for('static', filename='img/' +  post.author.image_file) }}" alt="">
-                            <a class="text-decoration-none" href="{{ url_for('profile.user_profile', username=post.author.username) }}">{{ post.author.username }}</a>
-                        </span>
-                    </span>
-                    on {{ post.created_at.strftime('%Y-%m-%d %H:%M') }}
-                </div>
-                <p class="card-text">{{ post.content|truncate(200) }}</p>
-                <div class="mb-2">
-                    <a href="{{ url_for('blog.post', post_id=post.id) }}" class="btn btn-info">Read More</a>
-                </div>
-            </div>
+{% for i in range(0, posts.items|length, 3) %}
+{% set post1 = posts.items[i] %}
+{% set post2 = posts.items[i + 1] if i + 1 < posts.items|length else None %}
+{% set post3 = posts.items[i + 2] if i + 2 < posts.items|length else None %}
+<div class="p-3 mb-4 bg-body-tertiary rounded-3 px-5" style="background-color: #f8f9fa;">
+  <div class="container-fluid">
+    <h1 class="display-5 fw-bold">
+      <a href="{{ url_for('blog.global_post', post_id=post1.id,page=posts.page) }}" style="text-decoration: none;color: black;">{{ post1.title|truncate(20) }}</a>
+      {% if current_user.is_authenticated %}
+      <a href="#" class="btn btn-sm btn-outline-dark like-link" data-post-id="{{ post1.id }}">
+        <i class="bi {% if current_user.has_liked_post(post1) %}bi-hand-thumbs-up-fill{% else %}bi-hand-thumbs-up{% endif %}"></i>
+        <span id="like-count-{{ post1.id }}">{{ post1.liked_by.count() }}</span>
+      </a>
+      {% endif %}
+    </h1>
+    <div class="row">
+        <!-- Post content comes first -->
+        <div class="col-md-8">
+          <p class="fs-4">{{ post1.content|truncate(150) }}</p>
+          <a href="{{ url_for('blog.global_post', post_id=post1.id,page=posts.page) }}" class="btn btn-primary btn-lg">Read More</a>
         </div>
-    {% endfor %}
+      
+        <!-- Post metadata comes after -->
+        <div class="col-6 col-md-4 text-muted mb-2 d-flex align-items-center justify-content-md-end mt-3 mt-md-0">
+          <span class="d-flex align-items-center" style="font-size: 1.1rem;">
+            <span class="me-2">Posted by</span>
+            <a href="{{ url_for('profile.user_profile', username=post1.author.username) }}" class="d-flex align-items-center text-decoration-none text-dark">
+              <img src="{{ url_for('static', filename='img/' + post1.author.image_file) }}" 
+                   alt="Author image" 
+                   class="rounded-circle me-2" 
+                   width="40" height="40" 
+                   style="object-fit: cover; border: 2px solid #dee2e6;">
+              <strong style="font-size: 1.1rem;">{{ post1.author.username }}</strong>
+            </a>
+          </span>
+          <span class="ms-2" style="font-size: 1.1rem;">on {{ post1.created_at.strftime('%Y-%m-%d %H:%M') }}</span>
+        </div>
+      </div>
+      </div>
+
+</div>
+
+{# Two Half-Width Posts #}
+<div class="row align-items-md-stretch mb-4">
+  {% if post2 %}
+  <div class="col-md-6">
+    <div class="h-100 p-3 px-5 text-bg-dark rounded-3">
+      <h2>
+        <a href="{{ url_for('blog.global_post', post_id=post2.id,page=posts.page) }}" style="text-decoration: none;color: white;">{{ post2.title|truncate(20) }}</a>
+        {% if current_user.is_authenticated %}
+        <a href="#" class="btn btn-sm btn-outline-light like-link" style="opacity: 1 !important;" data-post-id="{{ post2.id }}">
+            <i class="bi {% if current_user.has_liked_post(post2) %}bi-hand-thumbs-up-fill{% else %}bi-hand-thumbs-up{% endif %}"></i>
+            <span id="like-count-{{ post2.id }}">{{ post2.liked_by.count() }}</span>
+          </a>
+          {% endif %}
+      </h2>
+      <div class="text-muted mb-2">
+        <span class="d-inline-flex align-items-center">
+          Posted by
+          <span class="ms-1 badge d-inline-flex align-items-center p-1 pe-2 text-success-emphasis bg-success-subtle border border-success-subtle rounded-pill">
+            <img class="rounded-circle me-1" width="24" height="24" src="{{ url_for('static', filename='img/' + post2.author.image_file) }}" alt="">
+            <a class="text-decoration-none" href="{{ url_for('profile.user_profile', username=post2.author.username) }}" style="text-decoration: none;color: white;">{{ post2.author.username }}</a>
+          </span>
+        </span>
+        on {{ post2.created_at.strftime('%Y-%m-%d %H:%M') }}
+      </div>
+      <p>{{ post2.content|truncate(100) }}</p>
+      <a href="{{ url_for('blog.global_post', post_id=post2.id,page=posts.page) }}" class="btn btn-outline-light">Read More</a>
+    </div>
+  </div>
+  {% endif %}
+
+  {% if post3 %}
+  <div class="col-md-6">
+    <div class="h-100 p-3 px-5 bg-body-tertiary border rounded-3">
+      <h2>
+        <a href="{{ url_for('blog.global_post', post_id=post3.id,page=posts.page) }}" style="text-decoration: none;color: black;">{{ post3.title|truncate(20) }}</a>
+        {% if current_user.is_authenticated %}
+        <a href="#" class="btn btn-sm btn-outline-dark like-link" data-post-id="{{ post3.id }}">
+          <i class="bi {% if current_user.has_liked_post(post3) %}bi-hand-thumbs-up-fill{% else %}bi-hand-thumbs-up{% endif %}"></i>
+          <span id="like-count-{{ post3.id }}">{{ post3.liked_by.count() }}</span>
+        </a>
+        {% endif %}
+      </h2>
+      <div class="text-muted mb-2">
+        <span class="d-inline-flex align-items-center">
+          Posted by
+          <span class="ms-1 badge d-inline-flex align-items-center p-1 pe-2 text-success-emphasis bg-success-subtle border border-success-subtle rounded-pill">
+            <img class="rounded-circle me-1" width="24" height="24" src="{{ url_for('static', filename='img/' + post3.author.image_file) }}" alt="">
+            <a class="text-decoration-none" href="{{ url_for('profile.user_profile', username=post3.author.username) }}" style="text-decoration: none;color: black;">{{ post3.author.username }}</a>
+          </span>
+        </span>
+        on {{ post3.created_at.strftime('%Y-%m-%d %H:%M') }}
+      </div>
+      <p>{{ post3.content|truncate(100) }}</p>
+      <a href="{{ url_for('blog.global_post', post_id=post3.id,page=posts.page) }}" class="btn btn-outline-secondary">Read More</a>
+    </div>
+  </div>
+  {% endif %}
+</div>
+{% endfor %}
+
     
     <!-- Pagination -->
     {% if posts.pages > 1 %}
@@ -41,7 +116,7 @@
         <ul class="pagination justify-content-center">
             {% if posts.has_prev %}
                 <li class="page-item">
-                    <a class="page-link" href="{{ url_for('blog.feed', page=posts.prev_num) }}" tabindex="-1">Previous</a>
+                    <a class="page-link" href="{{ url_for('blog.global_feed', page=posts.prev_num) }}" tabindex="-1">Previous</a>
                 </li>
             {% else %}
                 <li class="page-item disabled">
@@ -53,11 +128,11 @@
                 {% if page_num %}
                     {% if posts.page == page_num %}
                         <li class="page-item active">
-                            <a class="page-link" href="{{ url_for('blog.feed', page=page_num) }}">{{ page_num }}</a>
+                            <a class="page-link" href="{{ url_for('blog.global_feed', page=page_num) }}">{{ page_num }}</a>
                         </li>
                     {% else %}
                         <li class="page-item">
-                            <a class="page-link" href="{{ url_for('blog.feed', page=page_num) }}">{{ page_num }}</a>
+                            <a class="page-link" href="{{ url_for('blog.global_feed', page=page_num) }}">{{ page_num }}</a>
                         </li>
                     {% endif %}
                 {% else %}
@@ -69,7 +144,7 @@
             
             {% if posts.has_next %}
                 <li class="page-item">
-                    <a class="page-link" href="{{ url_for('blog.feed', page=posts.next_num) }}">Next</a>
+                    <a class="page-link" href="{{ url_for('blog.global_feed', page=posts.next_num) }}">Next</a>
                 </li>
             {% else %}
                 <li class="page-item disabled">
@@ -84,40 +159,50 @@
 {% endif %}
 
     <script>
-      document.querySelectorAll('.like-link').forEach(link => {
-          link.addEventListener('click', function (event) {
-              event.preventDefault();  // Stop default <a> behavior
-      
-              const postId = this.getAttribute('data-post-id');
-              const icon = this.querySelector('i');
-              const countSpan = document.getElementById(`like-count-${postId}`);
-      
-              fetch(`/like/${postId}`, {
-                  method: 'POST',
-                  headers: {
-                      'Content-Type': 'application/json'
-                  },
-                  credentials: 'include'
-              })
-              .then(response => response.json())
-              .then(data => {
-                  if (data.status === 'success') {
-                      // Toggle icon class
-                      if (data.action === 'liked') {
-                          icon.classList.remove('bi-hand-thumbs-up');
-                          icon.classList.add('bi-hand-thumbs-up-fill');
-                      } else {
-                          icon.classList.remove('bi-hand-thumbs-up-fill');
-                          icon.classList.add('bi-hand-thumbs-up');
-                      }
-      
-                      // Update like count
-                      countSpan.textContent = data.like_count;
-                  }
-              });
-          });
-      });
+     document.querySelectorAll('.like-link').forEach(link => {
+    link.addEventListener('click', function (event) {
+        event.preventDefault();
+
+        const postId = this.getAttribute('data-post-id');
+        const icon = this.querySelector('i');
+        const countSpan = document.getElementById(`like-count-${postId}`);
+
+        // Disable click to avoid double request
+        this.style.pointerEvents = 'none';
+
+        fetch(`/like/${postId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            credentials: 'include'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                if (data.action === 'liked') {
+                    icon.classList.remove('bi-hand-thumbs-up');
+                    icon.classList.add('bi-hand-thumbs-up-fill');
+                } else {
+                    icon.classList.remove('bi-hand-thumbs-up-fill');
+                    icon.classList.add('bi-hand-thumbs-up');
+                }
+                countSpan.textContent = data.like_count;
+            } else {
+                console.warn("Like error:", data.message);
+            }
+        })
+        .finally(() => {
+            this.style.pointerEvents = ''; // Re-enable click
+        });
+    });
+});
+
       </script>
-    
+</div>    
 {% endblock %}
+
+
+
+
 

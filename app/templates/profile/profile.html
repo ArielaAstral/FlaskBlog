@@ -9,143 +9,150 @@
 {% endblock %}
 
 {% block content %}
-<div class="card mb-4">
-    <div class="card-body">
-        <div class="d-flex align-items-center mb-3">
-            <style>
-                .profile-pic-container {
-                    width: 100px;
-                    height: 100px;
-                    position: relative;
-                    display: inline-block;
-                    overflow: hidden;
-                }
+<div class="chatgpt-style container">
+    <div class="card mb-4 p-2 rounded shadow">
+        <div class="card-body">
+            <div class="row align-items-center">
+                <div class="col-md-auto text-center">
+                    <style>
+                        .profile-pic-container {
+                            width: 100px;
+                            height: 100px;
+                            position: relative;
+                            display: inline-block;
+                            overflow: hidden;
+                        }
 
-                .profile-pic-container img {
-                    width: 100px;
-                    height: 100px;
-                    object-fit: cover;
-                    border-radius: 50%;
-                }
-                .profile-pic-overlay {
-                    position: absolute;
-                    top: 0;
-                    left: 0;
-                    width: 100px;
-                    height: 100px;
-                    border-radius: 50%;
-                    background: rgba(0, 0, 0, 0.6);
-                    color: white;
-                    opacity: 0;
-                    transition: opacity 0.3s ease-in-out;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    gap: 12px;
-                    padding: 0; /* prevent overflow */
-                    box-sizing: border-box;
-                }
-                .profile-pic-container:hover .profile-pic-overlay {
-                    opacity: 1;
-                }
-                .profile-pic-overlay button,
-                .profile-pic-overlay label {
-                    background: none;
-                    border: none;
-                    color: white;
-                    cursor: pointer;
-                    background: none;
-                    border: none;
-                    padding: 0;
-                    margin: 0;
-                    font-size: 18px;
-                }
-                </style>
-                
-                <div class="profile-pic-container me-3">
-                    <img src="{{ url_for('static', filename='img/' + (user.image_file if user else current_user.image_file)) }}" alt="Profile Picture">
-                    {% if not user %}
-                    <div class="profile-pic-overlay">
-                        <!-- Upload icon -->
-                        <label for="image_file" title="Upload"><i class="bi bi-upload"></i></label>
-                        <!-- Remove icon -->
-                        <form method="POST" action="{{ url_for('profile.remove_picture') }}" style="display:inline;">
-                            <button type="submit" title="Remove"><i class="bi bi-trash"></i></button>
-                        </form>
+                        .profile-pic-container img {
+                            width: 100px;
+                            height: 100px;
+                            object-fit: cover;
+                            border-radius: 50%;
+                        }
+
+                        .profile-pic-overlay {
+                            position: absolute;
+                            top: 0;
+                            left: 0;
+                            width: 100%;
+                            height: 100%;
+                            border-radius: 50%;
+                            background: rgba(0, 0, 0, 0.6);
+                            color: white;
+                            opacity: 0;
+                            transition: opacity 0.3s ease-in-out;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            gap: 12px;
+                            box-sizing: border-box;
+                        }
+
+                        .profile-pic-container:hover .profile-pic-overlay {
+                            opacity: 1;
+                        }
+
+                        .profile-pic-overlay button,
+                        .profile-pic-overlay label {
+                            background: none;
+                            border: none;
+                            color: white;
+                            cursor: pointer;
+                            font-size: 18px;
+                        }
+                    </style>
+
+                    <div class="profile-pic-container mx-auto mb-3">
+                        <img src="{{ url_for('static', filename='img/' + (user.image_file if user else current_user.image_file)) }}" alt="Profile Picture">
+                        {% if not user %}
+                        <div class="profile-pic-overlay">
+                            <label for="image_file" title="Upload"><i class="bi bi-upload"></i></label>
+                            <form method="POST" action="{{ url_for('profile.remove_picture') }}" style="display:inline;">
+                                <button type="submit" title="Remove"><i class="bi bi-trash"></i></button>
+                            </form>
+                        </div>
+                        {% endif %}
                     </div>
+
+                    {% if not user %}
+                    <form method="POST" enctype="multipart/form-data" action="{{ url_for('profile.upload_picture') }}" style="display: none;" id="uploadForm">
+                        <input type="file" id="image_file" name="image_file" accept="image/*" onchange="document.getElementById('uploadForm').submit();">
+                    </form>
                     {% endif %}
                 </div>
-                
-                {% if not user %}
-                <!-- Hidden form for image upload -->
-                <form method="POST" enctype="multipart/form-data" action="{{ url_for('profile.upload_picture') }}" style="display: none;" id="uploadForm">
-                    <input type="file" id="image_file" name="image_file" accept="image/*" onchange="document.getElementById('uploadForm').submit();">
-                </form>
-                {% endif %}                
-            <div>
-                <div class="d-flex align-items-center mb-2">
-                    <h2 class="mb-0 me-3">{{ user.username if user else current_user.username }}</h2>
-
-
-                    {% if user and user.id != current_user.id %}
+                <div class="col align-items-center">
+                    <div class="d-flex flex-wrap align-items-center mb-2">
+                        <h2 class="mb-0 me-3">{{ user.username if user else current_user.username }}</h2>
+                        {% if user and user.id != current_user.id %}
                         {% if Followingcheck %}
-                            <a href="{{ url_for('profile.unfollow', username=user.username) }}" class="btn btn-sm btn-danger fw-bold" style="color: white;">
-                                Unfollow <i class="bi bi-person-fill-x fs-5"></i>
-                            </a>
+                        <a href="{{ url_for('profile.unfollow', username=user.username) }}" class="btn btn-sm btn-danger fw-bold text-white">
+                            Unfollow <i class="bi bi-person-fill-x fs-5"></i>
+                        </a>
                         {% else %}
-                            <a href="{{ url_for('profile.follow', username=user.username) }}" class="btn btn-sm btn-success fw-bold" style="color: white;">
-                                Follow <i class="bi bi-person-fill-add fs-5"></i>
-                            </a>
+                        <a href="{{ url_for('profile.follow', username=user.username) }}" class="btn btn-sm btn-success fw-bold text-white">
+                            Follow <i class="bi bi-person-fill-add fs-5"></i>
+                        </a>
                         {% endif %}
-                    {% endif %}
-
-                  </div>
-                <p class="text-muted mb-0">{{ user.email if user else current_user.email }}</p>
-                <small class="text-muted">Member since: {{ (user.created_at if user else current_user.created_at).strftime('%Y-%m-%d') }}</small>
-                <div class="mt-2">
-                    <a href="{{ url_for('profile.user_followers', username=(user.username if user else current_user.username)) }}" class="btn btn-outline-primary btn-sm me-2">
-                        Followers ({{ user.followers.count() if user else current_user.followers.count() }})
-                    </a>
-                    <a href="{{ url_for('profile.user_following', username=(user.username if user else current_user.username)) }}" class="btn btn-outline-primary btn-sm">
-                        Following ({{ user.followed.count() if user else current_user.followed.count() }})
-                    </a>
+                        {% endif %}
+                    </div>
+                    <p class="text-muted mb-0">{{ user.email if user else current_user.email }}</p>
+                    <small class="text-muted">Member since: {{ (user.created_at if user else current_user.created_at).strftime('%Y-%m-%d') }}</small>
+                    <div class="mt-2">
+                        <a href="{{ url_for('profile.user_followers', username=(user.username if user else current_user.username)) }}" class="btn btn-dark btn-sm me-2">
+                            Followers ({{ user.followers.count() if user else current_user.followers.count() }})
+                        </a>
+                        <a href="{{ url_for('profile.user_following', username=(user.username if user else current_user.username)) }}" class="btn btn-dark btn-sm">
+                            Following ({{ user.followed.count() if user else current_user.followed.count() }})
+                        </a>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
+
+    <h3 class="mb-3">
+        {% if user %}
+        {{ user.username }}'s Posts
+        {% else %}
+        My Posts
+        {% endif %}
+    </h3>
+
+    {% if posts %}
+    {% for post in posts %}
+    <div class="p-3 mb-4 bg-body-tertiary border rounded-4 shadow">
+        <div class="container-fluid">
+            <h1 class="display-6 fw-bold">
+                <a href="{{ url_for('blog.profile_post', post_id=post.id,page=posts.page) }}" class="text-decoration-none text-dark">{{ post.title|truncate(20) }}</a>
+                <a href="#" class="btn btn-sm btn-outline-dark like-link" data-post-id="{{ post.id }}">
+                    <i class="bi {% if current_user.has_liked_post(post) %}bi-hand-thumbs-up-fill{% else %}bi-hand-thumbs-up{% endif %}"></i>
+                    <span id="like-count-{{ post.id }}">{{ post.liked_by.count() }}</span>
+                </a>
+            </h1>
+            <div class="row">
+                <div class="col-md-8">
+                    <p class="fs-5">{{ post.content|truncate(200) }}</p>
+                    <a href="{{ url_for('blog.profile_post', post_id=post.id) }}" class="btn btn-dark btn-sm">Read More</a>
+                </div>
+                <div class="col-12 col-md-4 text-muted">
+                    <span class="d-inline-flex align-items-center">
+                        Posted by
+                        <span class="ms-1 badge d-inline-flex align-items-center p-1 pe-2 text-success-emphasis bg-success-subtle border border-success-subtle rounded-pill">
+                            <img class="rounded-circle me-1" width="24" height="24" src="{{ url_for('static', filename='img/' + post.author.image_file) }}" alt="">
+                            <a class="text-decoration-none text-dark" href="{{ url_for('profile.user_profile', username=post.author.username) }}">{{ post.author.username }}</a>
+                        </span>
+                    </span>
+                    <br>
+                    on {{ post.created_at.strftime('%Y-%m-%d %H:%M') }}
+                    {% if not user or user.id == current_user.id %}
+                    <hr>
+                   <div class="row mt-2">
+    <div class="col-12 d-flex justify-content-center gap-3 flex-wrap">
+        <a href="{{ url_for('blog.edit_post', post_id=post.id, posn='pp') }}" class="btn btn-sm btn-success">Edit</a>
+        <button class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal{{ post.id }}">Delete</button>
+    </div>
 </div>
 
-<h3 class="mb-3">
-    {% if user %}
-        {{ user.username }}'s Posts
-    {% else %}
-        My Posts
-    {% endif %}
-</h3>
-
-{% if posts %}
-    {% for post in posts %}
-        <div class="card mb-4">
-            <div class="card-body">
-                <h4 class="card-title">
-                    <a href="{{ url_for('blog.post', post_id=post.id) }}">{{ post.title }}</a>
-                    <a href="#" class="btn me-2 like-link" data-post-id="{{ post.id }}">
-                        <i class="bi {% if current_user.has_liked_post(post) %}bi-hand-thumbs-up-fill{% else %}bi-hand-thumbs-up{% endif %}"></i>
-                        <span id="like-count-{{ post.id }}">{{ post.liked_by.count() }}</span>
-                    </a>
-                </h4>
-                <div class="card-subtitle text-muted mb-2">
-                    Posted on {{ post.created_at.strftime('%Y-%m-%d %H:%M') }}
-                </div>
-                <p class="card-text">{{ post.content|truncate(150) }}</p>
-                
-                    <a href="{{ url_for('blog.post', post_id=post.id) }}" class="btn btn-info">Read More</a>
-                
-                {% if not user or user.id == current_user.id %}
-                    <a href="{{ url_for('blog.edit_post', post_id=post.id) }}" class="btn btn-outline-secondary">Edit</a>
-                    <button class="btn btn-outline-danger" data-bs-toggle="modal" data-bs-target="#deleteModal{{ post.id }}">Delete</button>
-                    
-                    <!-- Delete Confirmation Modal -->
                     <div class="modal fade" id="deleteModal{{ post.id }}" tabindex="-1" aria-labelledby="deleteModalLabel{{ post.id }}" aria-hidden="true">
                         <div class="modal-dialog">
                             <div class="modal-content">
@@ -165,19 +172,20 @@
                             </div>
                         </div>
                     </div>
-                {% endif %}
+                    {% endif %}
+                </div>
             </div>
         </div>
+    </div>
     {% endfor %}
-{% else %}
+    {% else %}
     <div class="alert alert-info">No posts yet.</div>
-{% endif %}
+    {% endif %}
 
-{% if not user %}
+    {% if not user %}
     <div class="mt-4">
         <a href="{{ url_for('blog.create_post') }}" class="btn btn-success">Create New Post</a>
     </div>
-{% endif %}
-
-    
+    {% endif %}
+</div>
 {% endblock %}

@@ -8,7 +8,7 @@
         <h2>Edit Post</h2>
     </div>
     <div class="card-body">
-        <form method="POST" action="{{ url_for('blog.edit_post', post_id=post.id) }}">
+        <form method="POST" action="{{ url_for('blog.edit_post', post_id=post.id,posn=posn) }}">
             <div class="mb-3">
                 <label for="title" class="form-label">Title</label>
                 <input type="text" class="form-control" id="title" name="title" value="{{ post.title }}" required>
@@ -18,7 +18,7 @@
                 <textarea class="form-control" id="content" name="content" rows="8" required>{{ post.content }}</textarea>
             </div>
             <button type="submit" class="btn btn-primary">Update</button>
-            <a href="{{ url_for('blog.post', post_id=post.id) }}" class="btn btn-outline-secondary">Cancel</a>
+            <a href="{{ url_for('blog.post', post_id=post.id, page=1) }}" class="btn btn-outline-secondary">Cancel</a>
         </form>
     </div>
 </div>

@@ -9,7 +9,8 @@ followers = db.Table('followers',
 )
 likes = db.Table('likes',
     db.Column('user_id', db.Integer, db.ForeignKey('user.id'), primary_key=True),
-    db.Column('post_id', db.Integer, db.ForeignKey('post.id'), primary_key=True)
+    db.Column('post_id', db.Integer, db.ForeignKey('post.id'), primary_key=True),
+    db.UniqueConstraint('user_id', 'post_id', name='unique_like')
 )
 
 @login_manager.user_loader
@@ -68,7 +69,8 @@ class User(db.Model, UserMixin):
             self.liked.append(post)
 
     def unlike_post(self, post):
-        if self.has_liked_post(post):
+        like_exists = self.liked.filter(likes.c.post_id == post.id).first()
+        if like_exists:
             self.liked.remove(post)
 
     def has_liked_post(self, post):

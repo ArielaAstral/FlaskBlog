@@ -3,11 +3,17 @@
 {% block title %}Login - Flask Blog{% endblock %}
 
 {% block content %}
-    <div class="modal modal-sheet position-static d-block bg-body-secondary p-2 py-md-0" tabindex="-1" role="dialog" id="modalSignin">
+<div class="chatgpt-style">
+      <div class="modal modal-sheet position-static d-block bg-body-secondary p-2 py-md-0" tabindex="-1" role="dialog" id="modalSignin">
+        <div class="row  rounded-4 shadow border m-2 p-2">
+          <div class="col-12 col-md-6">
+          <img src="static\pics\Login.png" alt="None" style="width:100%;height:100%" class="rounded-4">
+        </div>
+        <div class="col-12 col-md-6">
         <div class="modal-dialog">
-          <div class="modal-content rounded-4 shadow">
-            <div class="container p-3 border-bottom-0">
-                <h1 class="fw-bold mb-0 fs-2 text-center" style="color: #33c2ff;">Login</h1>
+          <div class="modal-content border-0">
+            <div class="container p-5 pb-3 border-bottom-0">
+                <h1 class="fw-bold mb-0 fs-2 text-center">Login</h1>
               </div>
       
             <div class="modal-body p-5 pt-0">
@@ -24,7 +30,7 @@
                     <input type="checkbox" class="form-check-input" id="remember" name="remember">
                     <label class="form-check-label" for="remember">Remember Me</label>
                 </div>
-                <button class="w-100 mb-2 btn btn-lg rounded-3 btn-info fw-bold" style="color: white;" type="submit">Login</button>
+                <button class="w-100 mb-2 btn btn-dark btn-lg rounded-3 btn-info fw-bold" style="color: white;" type="submit">Login</button>
                 <hr class="my-1">
                 <div class="text-center">
                     <small>Don't have an account? <a href="{{ url_for('auth.signup') }}">Sign Up</a></small>
@@ -34,6 +40,9 @@
           </div>
         </div>
       
-      
+      </div>
 </div>
+    </div>
+    </div>
+    
 {% endblock %}

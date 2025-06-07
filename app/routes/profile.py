@@ -4,11 +4,14 @@ from app import db
 from app.models import Post, User,followers
 
 profile_bp = Blueprint('profile', __name__)
+# app/routes/profile.py
+from flask import request
 
 @profile_bp.route('/profile')
 @login_required
 def profile():
-    posts = Post.query.filter_by(user_id=current_user.id).order_by(Post.created_at.desc()).all()
+    page = request.args.get('page', 1, type=int)
+    posts = Post.query.filter_by(author=current_user).order_by(Post.created_at.desc()).paginate(page=page, per_page=3)
     return render_template('profile/profile.html', title='Profile', posts=posts)
 
 @profile_bp.route('/profile/<string:username>')
